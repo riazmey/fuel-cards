@@ -40,7 +40,7 @@ def import_from_sites(name_function: str) -> Tuple[list, bool]:
 
 @shared_task(name='Загрузка остатков на лицевых счетах (по всем сайтам)')
 def import_balance():
-    name_function = 'import_balance'
+    name_function = 'balance_get'
     print('Импорт остатков на лицевых счетах сайтов...')
     data, success = import_from_sites(name_function)
     return success
@@ -48,7 +48,7 @@ def import_balance():
 
 @shared_task(name='Загрузка товаров (по всем сайтам)')
 def import_items():
-    name_function = 'import_items'
+    name_function = 'items_get'
     print('Импорт товаров сайтов...')
     data, success = import_from_sites(name_function)
     return success
@@ -56,7 +56,7 @@ def import_items():
 
 @shared_task(name='Загрузка топливных карт (по всем сайтам)')
 def import_cards():
-    name_function = 'import_cards'
+    name_function = 'cards_get'
     print('Импорт топливных карт сайтов...')
     data, success = import_from_sites(name_function)
     return success
@@ -64,7 +64,7 @@ def import_cards():
 
 @shared_task(name='Загрузка лимитов топливных карт (по всем сайтам)')
 def import_limits():
-    name_function = 'import_limits'
+    name_function = 'limits_get'
     print('Импорт лимитов топливных карт...')
     data, success = import_from_sites(name_function)
     return success
@@ -79,7 +79,7 @@ def import_transactions(**kwargs):
     params = {'begin': begin, 'end': end}
     print(f'Импорт транзакций (с {begin} по {end})...')
     for site in sites:
-        data, success = site.ws.import_transactions(**params)
+        data, success = site.ws.transactions_get(**params)
         if not success:
             break
         total_data = len(data)
