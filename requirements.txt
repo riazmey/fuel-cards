@@ -1,0 +1,14 @@
+pytz
+python-dateutil
+psycopg2-binary
+django
+django-environ
+django-extensions
+django-celery-beat
+django-celery-results
+django-redis
+django-timezone-field
+djangorestframework
+djangorestframework-simplejwt
+loguru
+requests

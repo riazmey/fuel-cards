@@ -1,0 +1,4 @@
+[
+	{"code_str": "active", "repr": "Заблокирована"},
+	{"code_str": "block", "repr": "Активна"}
+]

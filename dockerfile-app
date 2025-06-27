@@ -1,0 +1,33 @@
+FROM python:3.13-alpine
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Add requirements packages
+RUN apk update
+RUN apk add libpq
+RUN apk add --virtual .build-deps gcc python3-dev musl-dev postgresql-dev
+RUN apk add bash curl git nano
+
+# Add ru_RU locale
+RUN apk add tzdata
+ENV TZ=Europe/Moscow
+ENV LANG=ru_RU.UTF-8
+ENV LANGUAGE=ru_RU.UTF-8
+ENV LC_ALL=ru_RU.UTF-8
+
+# Set timezone
+RUN cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+RUN echo "Europe/Moscow" > /etc/timezone
+
+# Upgrade python-pip
+RUN pip install --upgrade pip
+RUN pip install gunicorn
+
+WORKDIR /app
+RUN git clone --branch main https://github.com/riazmey/fuel-cards.git
+
+WORKDIR /app/fuel-cards
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+CMD ["/bin/bash", "/app/fuel-cards/entrypoint-app.sh"]

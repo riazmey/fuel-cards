@@ -1,0 +1,7 @@
+[
+	{"code_str": "nonrenewable", "repr": "Невозобновляемый"},
+	{"code_str": "day", "repr": "Цикличность: день"},
+	{"code_str": "week", "repr": "Цикличность: неделя"},
+	{"code_str": "month", "repr": "Цикличность: месяц"},
+	{"code_str": "quarter", "repr": "Цикличность: квартал"}
+]

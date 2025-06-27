@@ -1,0 +1,6 @@
+[
+	{"code_str": "fuel", "repr": "Топливо"},
+	{"code_str": "gas", "repr": "Газ"},
+	{"code_str": "goods", "repr": "Товары"},
+	{"code_str": "service", "repr": "Услуги"}
+]

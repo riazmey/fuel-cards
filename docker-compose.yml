@@ -1,0 +1,91 @@
+services:
+
+  fuel-cards-app:
+    container_name: fuel-cards-app
+    hostname: fuel-cards-app
+    image: riazmey/fuel-cards-app:latest
+    environment:
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
+      - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - DJANGO_LOGGING_FILE=${DJANGO_LOGGING_FILE}
+      - DATABASE_DB=${DATABASE_DB}
+      - DATABASE_USER=${DATABASE_USER}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - WEB_PORT=${WEB_PORT}
+      - WS_CLASSIFIERS_URL=${WS_CLASSIFIERS_URL}
+    networks:
+      default:
+        ipv4_address: ${NETWORK_IP_APP}
+    dns_search:
+      - .
+    ports:
+      - '${WEB_PORT}:${WEB_PORT}'
+    volumes:
+      - source: /data/fuel-cards-app/migrations-cards
+        target: /app/fuel-cards/cards/migrations
+        read_only: false
+        type: bind
+        bind:
+          create_host_path: true
+      - source: /data/fuel-cards-app/migrations-subscriptions
+        target: /app/fuel-cards/subscriptions/migrations
+        read_only: false
+        type: bind
+        bind:
+          create_host_path: true
+    healthcheck:
+      test: [ 'CMD-SHELL', 'curl --fail http://docker.ltlog.local:${WEB_PORT}/manage || exit 1' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    depends_on:
+      - fuel-cards-psql
+
+  fuel-cards-psql:
+    container_name: fuel-cards-psql
+    hostname: fuel-cards-psql
+    image: riazmey/fuel-cards-psql:latest
+    shm_size: 128mb
+    environment:
+      - POSTGRES_DB=${DATABASE_DB}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    networks:
+      default:
+        ipv4_address: ${NETWORK_IP_PSQL}
+    dns_search:
+      - .
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
+    volumes:
+      - source: /data/fuel-cards-psql
+        target: /var/lib/postgresql/data
+        read_only: false
+        type: bind
+        bind:
+          create_host_path: true
+      - type: tmpfs
+        target: /var/run/postgresql
+        read_only: false
+    command: -p ${DATABASE_PORT}
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -h ${NETWORK_IP_PSQL} -p ${DATABASE_PORT} -U ${DATABASE_USER}' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+
+networks:
+
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${NETWORK_SUBNET}

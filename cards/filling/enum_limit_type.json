@@ -1,0 +1,5 @@
+[
+	{"code_str": "category", "repr": "По категории"},
+	{"code_str": "item", "repr": "По товару"},
+	{"code_str": "all", "repr": "По всем товарам/категориям"}
+]
