@@ -1,5 +1,4 @@
 
-import pytz
 from zoneinfo import ZoneInfo
 import json
 import requests
