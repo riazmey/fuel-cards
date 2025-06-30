@@ -2,6 +2,7 @@
 import pytz
 import json
 import requests
+import base64
 from datetime import datetime, timedelta
 from dateutil import parser
 from typing import Any, Dict, Tuple, List
@@ -44,11 +45,11 @@ class WSSiteRosneft:
         self.max_period_transaction = timedelta(days=30)
 
         self.base_headers = {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'}
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+            'RnCard-Identity-Account-Pass': base64.b64encode(bytes(self.password, 'utf-8'))}
 
         self.base_params = {
             'u': self.login,
-            'p': self.password,
             'contract': self.contract_id,
             'type': 'JSON'}
 
@@ -291,7 +292,7 @@ class WSSiteRosneft:
 
     @classmethod
     def _convert_data_ws_transaction(cls, data_transaction: dict) -> WSDataTransaction:
-        tz=pytz.timezone('UTC')
+        tz=pytz.timezone('Europe/Moscow')
         price = cls._value_to_float(data_transaction.get('Price', 0.00))
         price_discount = cls._value_to_float(data_transaction.get('DPrice', 0.00))
         amount = cls._value_to_float(data_transaction.get('Sum', 0.00))
