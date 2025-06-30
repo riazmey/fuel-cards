@@ -25,7 +25,7 @@ class MultithreadedDataProcessing():
         for thread in self.threads:
             thread.join()
         for data in self.processed_data:
-            result += data
+            result.append(data)
         return result, self.processed_success
 
     def _quantify_threads(self):

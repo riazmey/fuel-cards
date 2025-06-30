@@ -4,9 +4,12 @@ from rest_framework import serializers
 from .enum_limit_type import SerializerEntityEnumLimitType
 from .enum_item_category import SerializerEntityEnumItemCategory
 from .enum_limit_period import SerializerEntityEnumLimitPeriod
+from .enum_card_status import SerializerEntityEnumCardStatus
 from .site import SerializerEntitySite
+from .card import SerializerEntityCard
 from .item import SerializerEntityItem
 
+from cards.models import Card
 from cards.models import Limit
 
 from cards.validators import (
@@ -124,6 +127,7 @@ class SerializerParamsLimitDelete(serializers.Serializer):
 class SerializerEntityLimit(serializers.ModelSerializer):
 
     site = SerializerEntitySite()
+    card = SerializerEntityCard()
     type = SerializerEntityEnumLimitType()
     category = SerializerEntityEnumItemCategory()
     item = SerializerEntityItem()
@@ -132,6 +136,8 @@ class SerializerEntityLimit(serializers.ModelSerializer):
     class Meta:
 
         fields = (
+            'site',
+            'card',
             'id_external',
             'type',
             'category',
@@ -143,3 +149,22 @@ class SerializerEntityLimit(serializers.ModelSerializer):
             'deleted')
 
         model = Limit
+
+
+class SerializerEntityCardWithLimits(serializers.ModelSerializer):
+
+    site = SerializerEntitySite()
+    status = SerializerEntityEnumCardStatus()
+    limits = SerializerEntityLimit(many=True, source='card_relate_limit')
+
+    class Meta:
+
+        fields = (
+            'id',
+            'site',
+            'number',
+            'status',
+            'relevant',
+            'limits')
+
+        model = Card

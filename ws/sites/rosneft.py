@@ -207,13 +207,23 @@ class WSSiteRosneft:
         else:
             params_ready = self.base_params.copy()
 
+        if not method == requests.get and data == None:
+            data_ready = ''
+            for item in params_ready:
+                if data_ready:
+                    data_ready += '&'
+                data_ready += ''.join([item, '=', str(params_ready.get(item))])
+        else:
+            data_ready = data
+
         try:
             
             response = method(
                 url,
                 headers = headers_ready,
                 params = params_ready,
-                data = data,
+                json = json.dumps(params_ready),
+                data = data_ready,
                 timeout = 30)
             
             response.raise_for_status()
@@ -222,7 +232,10 @@ class WSSiteRosneft:
             return data_recieved, True
         
         except requests.RequestException as e:
-            message = f'Ошибка запроса к API сервиса РН-Карт: {str(e)}'
+            if response.text:
+                message = f'Ошибка запроса к API сервиса РН-Карт: {response.text}'
+            else:
+                message = f'Ошибка запроса к API сервиса РН-Карт: {str(e)}'
             logger.error(message)
             return message, False
         except json.JSONDecodeError as e:
@@ -523,7 +536,7 @@ def handler_limits_get_by_card_numbers(ws: WSSiteRosneft, data: list[str], proce
     if not processed_success:
         return
     for card_number in data:
-        data, processed_success = ws._request(
+        data_received, processed_success = ws._request(
             method = requests.get,
             urn = ws.URNs.limits_by_contract_get,
             params = {
@@ -536,6 +549,6 @@ def handler_limits_get_by_card_numbers(ws: WSSiteRosneft, data: list[str], proce
             }
         )
         if processed_success:
-            processed_data.extend(data)
+            processed_data.extend(data_received)
         else:
             raise 'Failed to retrieve data from service RN-Cart using the handler_limits_get_by_card_numbers function'

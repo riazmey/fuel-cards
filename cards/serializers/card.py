@@ -3,7 +3,6 @@ from rest_framework import serializers
 
 from .enum_card_status import SerializerEntityEnumCardStatus
 from .site import SerializerEntitySite
-from .limit import SerializerEntityLimit
 
 from cards.models import Card
 
@@ -65,24 +64,5 @@ class SerializerEntityCard(serializers.ModelSerializer):
             'number',
             'status',
             'relevant')
-
-        model = Card
-
-
-class SerializerEntityCardWithLimits(serializers.ModelSerializer):
-
-    site = SerializerEntitySite()
-    status = SerializerEntityEnumCardStatus()
-    limits = SerializerEntityLimit(many=True, source='card_relate_limit')
-
-    class Meta:
-
-        fields = (
-            'id',
-            'site',
-            'number',
-            'status',
-            'relevant',
-            'limits')
 
         model = Card

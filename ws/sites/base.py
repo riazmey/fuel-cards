@@ -78,14 +78,14 @@ class WSSiteBase:
         return result, success
     
     @transaction.atomic
-    def card_status_update(self, card_number: str, status: str) -> Tuple[SiteBalance | str, bool]:
+    def card_status_update(self, card_number: str, status: str) -> Tuple[Card | str, bool]:
         result = ''
         data, success = self.card_status_update_ws(card_number, status)
         if success:
             result = Card.objects.update_or_create(
                 site = self.site,
                 number=card_number,
-                defaults={'status': EnumCardStatus.objects.get(code_str=status)})
+                defaults={'status': EnumCardStatus.objects.get(code_str=status)})[0]
         else:
             result = data
         return result, success
@@ -142,18 +142,17 @@ class WSSiteBase:
                 case _:
                     category_obj = None
                     item_obj = None
-            result = Limit.objects.update_or_create(
+            result = Limit.objects.create(
                 site = self.site,
                 card = Card.objects.get(site=self.site, number=data_limit.card_number),
                 id_external = data_limit.id_external,
-                defaults = {
-                    'type': EnumLimitType.objects.get(code_str=data_limit.type),
-                    'period': EnumLimitPeriod.objects.get(code_str=data_limit.period),
-                    'category': category_obj,
-                    'item': item_obj,
-                    'unit': data_limit.unit,
-                    'value': data_limit.value,
-                    'deleted': False})
+                type = EnumLimitType.objects.get(code_str=data_limit.type),
+                period = EnumLimitPeriod.objects.get(code_str=data_limit.period),
+                category = category_obj,
+                item = item_obj,
+                unit = data_limit.unit,
+                value = data_limit.value,
+                deleted = False)
         else:
             result = data
         return result, success
@@ -173,19 +172,19 @@ class WSSiteBase:
                 case _:
                     category_obj = None
                     item_obj = None
-            Limit.objects.filter(
+            queryset = Limit.objects.filter(
                 site = self.site,
                 card = Card.objects.get(site=self.site, number=data_limit.card_number),
-                id_external = data_limit.id_external
-            ).update(
+                id_external = data_limit.id_external)
+            queryset.update(
                 type = EnumLimitType.objects.get(code_str=data_limit.type),
                 period = EnumLimitPeriod.objects.get(code_str=data_limit.period),
                 category = category_obj,
                 item = item_obj,
                 unit = data_limit.unit,
                 value = data_limit.value_new,
-                deleted = False
-            )
+                deleted = False)
+            result = queryset[0]
         else:
             result = data
         return result, success

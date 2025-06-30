@@ -21,7 +21,6 @@ from .item import (
 
 from .card import (
     SerializerEntityCard,
-    SerializerEntityCardWithLimits,
     SerializerParamsCardSite,
     SerializerParamsCardSiteCard,
     SerializerParamsCardSiteStatus,
@@ -36,6 +35,7 @@ from .transaction import (
 
 from .limit import (
     SerializerEntityLimit,
+    SerializerEntityCardWithLimits,
     SerializerParamsLimitSite,
     SerializerParamsLimitSiteCard,
     SerializerParamsLimitPostTypeAll,
