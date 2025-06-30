@@ -1,5 +1,6 @@
 
 import pytz
+from zoneinfo import ZoneInfo
 import json
 import requests
 import base64
@@ -292,7 +293,7 @@ class WSSiteRosneft:
 
     @classmethod
     def _convert_data_ws_transaction(cls, data_transaction: dict) -> WSDataTransaction:
-        tz=pytz.timezone('Europe/Moscow')
+        tz = ZoneInfo('Europe/Moscow')
         price = cls._value_to_float(data_transaction.get('Price', 0.00))
         price_discount = cls._value_to_float(data_transaction.get('DPrice', 0.00))
         amount = cls._value_to_float(data_transaction.get('Sum', 0.00))
@@ -484,7 +485,7 @@ class WSSiteRosneft:
 
     @classmethod
     def _range_periods(cls, begin: datetime, end: datetime,
-                       max_period: timedelta, tz: pytz.timezone = pytz.timezone('Europe/Moscow')) -> list[dict]:
+                       max_period: timedelta, tz: ZoneInfo = ZoneInfo('Europe/Moscow')) -> list[dict]:
         result = []
         now_date = datetime.now(tz=tz)
         begin_date = datetime(year=begin.year, month=begin.month, day=begin.day, tzinfo=tz)
