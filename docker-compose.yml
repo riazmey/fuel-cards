@@ -37,7 +37,7 @@ services:
         bind:
           create_host_path: true
     healthcheck:
-      test: [ 'CMD-SHELL', 'curl --fail http://docker.ltlog.local:${WEB_PORT}/manage || exit 1' ]
+      test: [ 'CMD-SHELL', 'curl --fail http://localhost:${WEB_PORT}/manage || exit 1' ]
       interval: 10s
       timeout: 5s
       retries: 5
